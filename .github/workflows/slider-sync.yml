@@ -1,0 +1,36 @@
+name: Sync slider + images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'slider.html'
+      - 'images-logo/**'
+  workflow_dispatch:
+
+jobs:
+  sync-slider:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync files to target repos
+        uses: kbrashears5/github-action-file-sync@v2.0.0
+        with:
+          REPOSITORIES: |
+            aadildhorat-cloud/Hive-Times@main
+            aadildhorat-cloud/polaricecream@main
+            aadildhorat-cloud/broadwaysweets@main
+            aadildhorat-cloud/sweetdepot@main
+            aadildhorat-cloud/sweetmart@main
+            aadildhorat-cloud/doughandco@main
+            aadildhorat-cloud/butchershop@main
+            aadildhorat-cloud/nothingfancy@main
+          FILES: |
+            slider.html=slider.html
+            images-slider/=images-slider/
+          TOKEN: ${{ secrets.ACTIONS }}
+          COMMIT_MESSAGE: "chore: sync slider + images from hive-times-assets"

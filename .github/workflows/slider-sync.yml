@@ -27,7 +27,7 @@ jobs:
             aadildhorat-cloud/sweetdepot@main
             aadildhorat-cloud/sweetmart@main
             aadildhorat-cloud/doughandco@main
-            aadildhorat-cloud/butchershop@main
+            aadildhorat-cloud/butcherblock@main
             aadildhorat-cloud/nothingfancy@main
           FILES: |
             slider.html=slider.html

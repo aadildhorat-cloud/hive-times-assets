@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'slider.html'
-      - 'images-logo/**'
+      - 'images-slider/**'
   workflow_dispatch:
 
 jobs:

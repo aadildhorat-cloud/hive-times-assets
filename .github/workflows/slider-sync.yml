@@ -30,6 +30,7 @@ jobs:
             aadildhorat-cloud/butcherblock@main
             aadildhorat-cloud/nothingfancy@main
             aadildhorat-cloud/cupcake-plantation@main
+            aadildhorat-cloud/delectable-dippers@main
           FILES: |
             slider.html=slider.html
             images-slider/=images-slider/

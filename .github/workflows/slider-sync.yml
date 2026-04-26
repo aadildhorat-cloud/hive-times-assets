@@ -32,6 +32,7 @@ jobs:
             aadildhorat-cloud/cupcake-plantation@main
             aadildhorat-cloud/delectable-dippers@main
             aadildhorat-cloud/daintydelicacies@main
+            aadildhorat-cloud/shubz@main
           FILES: |
             slider.html=slider.html
             images-slider/=images-slider/

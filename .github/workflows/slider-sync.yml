@@ -33,6 +33,8 @@ jobs:
             aadildhorat-cloud/delectable-dippers@main
             aadildhorat-cloud/daintydelicacies@main
             aadildhorat-cloud/shubz@main
+            aadildhorat-cloud/businesses@main
+            aadildhorat-cloud/services@main
           FILES: |
             slider.html=slider.html
             images-slider/=images-slider/

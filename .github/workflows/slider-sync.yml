@@ -35,6 +35,7 @@ jobs:
             aadildhorat-cloud/shubz@main
             aadildhorat-cloud/businesses@main
             aadildhorat-cloud/services@main
+            aadildhorat-cloud/bakenco@main
           FILES: |
             slider.html=slider.html
             images-slider/=images-slider/

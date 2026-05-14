@@ -36,6 +36,7 @@ jobs:
             aadildhorat-cloud/businesses@main
             aadildhorat-cloud/services@main
             aadildhorat-cloud/bakenco@main
+            aadildhorat-cloud/nuhashealthyliving@main
           FILES: |
             slider.html=slider.html
             images-slider/=images-slider/

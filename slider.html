@@ -1,82 +1,106 @@
 <style>
-  /* --- Slider Section --- */
+  /* --- Advanced 3D Slider Section --- */
   .slider-section {
-    padding: 0px 0;
-    background: #fff;
+    padding: 40px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    perspective: 1500px; /* Enables 3D depth */
   }
   .swiper {
     width: 100%;
     max-width: 1024px;
-    height: auto;
     margin: auto;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.15);
+    overflow: visible; /* Allows 3D shadows to pop out */
   }
   .swiper-slide {
     display: flex;
     justify-content: center;
     align-items: center;
     aspect-ratio: 16 / 9;
-    transition: transform 0.3s ease;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease, opacity 0.6s ease;
+    transform-style: preserve-3d;
+    background: #fff;
+    opacity: 0.85; /* Slightly dim inactive slides */
+  }
+  .swiper-slide-active {
+    transform: translateZ(20px) scale(1.02); /* 3D pop-out effect */
+    box-shadow: 0 25px 50px rgba(163, 9, 9, 0.25); /* Vibrant brand shadow */
+    opacity: 1;
   }
   .swiper-slide:hover {
-    transform: scale(1.02);
+    transform: translateZ(10px) scale(1.01);
+    opacity: 0.95;
   }
   .swiper-slide img {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    background: #fff;
     display: block;
-    transition: opacity 0.3s ease;
+    transition: transform 0.6s ease;
+  }
+  .swiper-slide-active img {
+    transform: scale(1.02); /* Subtle zoom on active image */
   }
   .swiper-slide a {
     display: block;
     width: 100%;
     height: 100%;
   }
+
+  /* Vibrant Pagination */
+  .swiper-pagination { bottom: 15px !important; }
   .swiper-pagination-bullet {
-    background: #fff;
-    opacity: 0.7;
-    transition: background-color 0.3s ease, opacity 0.3s ease;
+    width: 10px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    opacity: 1;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   }
   .swiper-pagination-bullet-active {
     background: #a30909;
-    opacity: 1;
+    width: 28px;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(163, 9, 9, 0.6);
   }
+
+  /* 3D Navigation Buttons */
   .swiper-button-next,
   .swiper-button-prev {
     color: #fff;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 0px;
+    background: linear-gradient(135deg, #a30909, #d93636);
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
-    backdrop-filter: blur(4px);
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 8px 20px rgba(163, 9, 9, 0.4);
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    margin-top: 0;
   }
   .swiper-button-next:hover,
   .swiper-button-prev:hover {
-    background: rgba(0, 0, 0, 0.7);
-    transform: scale(1.1);
+    transform: scale(1.15) translateZ(10px);
+    box-shadow: 0 12px 25px rgba(163, 9, 9, 0.6);
   }
+  .swiper-button-next:after,
+  .swiper-button-prev:after {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  /* Responsive Adjustments */
   @media (max-width: 768px) {
-    .swiper-slide {
-      aspect-ratio: 3 / 2;
-    }
+    .slider-section { padding: 20px 0; }
+    .swiper-slide { aspect-ratio: 3 / 2; }
+    .swiper-button-next, .swiper-button-prev { width: 38px; height: 38px; }
   }
   @media (max-width: 480px) {
-    .swiper-slide {
-      aspect-ratio: 4 / 3;
-    }
-    .swiper-button-next,
-    .swiper-button-prev {
-      padding: 8px;
-      width: 32px;
-      height: 32px;
-    }
-    .swiper-button-next:after,
-    .swiper-button-prev:after {
-      font-size: 14px;
-    }
+    .swiper-slide { aspect-ratio: 4 / 3; }
+    .swiper-button-next, .swiper-button-prev { width: 32px; height: 32px; }
+    .swiper-button-next:after, .swiper-button-prev:after { font-size: 14px; }
+    .swiper-pagination-bullet-active { width: 20px; }
   }
 </style>
 
@@ -85,74 +109,74 @@
     <!-- First 3 slides (FIXED ORDER) -->
     <div class="swiper-slide">
       <a href="https://hivetimes.co.za/" target="_blank" rel="noopener">
-        <img src="images-slider/products.jpg" alt="Hive Times">
+        <img src="images-slider/products.jpg" alt="Hive Times" loading="lazy">
       </a>
     </div>
     <div class="swiper-slide">
       <a href="https://services.hivetimes.co.za/" target="_blank" rel="noopener">
-        <img src="images-slider/services.jpg" alt="Hive Times Services">
+        <img src="images-slider/services.jpg" alt="Hive Times Services" loading="lazy">
       </a>
     </div>
     <div class="swiper-slide">
       <a href="https://business.hivetimes.co.za/" target="_blank" rel="noopener">
-        <img src="images-slider/business.jpg" alt="Hive Times Business Directory">
+        <img src="images-slider/business.jpg" alt="Hive Times Business Directory" loading="lazy">
       </a>
     </div>
     
     <!-- Remaining slides (WILL BE RANDOMIZED) -->
     <div class="swiper-slide" data-randomizable>
       <a href="https://n2auto.hivetimes.co.za/" target="_blank" rel="noopener">
-        <img src="images-slider/n2auto.jpg" alt="N2 auto Car Dealership">
+        <img src="images-slider/n2auto.jpg" alt="N2 auto Car Dealership" loading="lazy">
       </a>
     </div>
     <div class="swiper-slide" data-randomizable>
       <a href="http://doughandco.hivetimes.co.za/" target="_blank" rel="noopener">
-        <img src="images-slider/doughandco-long.jpg" alt="Dough and Co">
+        <img src="images-slider/doughandco-long.jpg" alt="Dough and Co" loading="lazy">
       </a>
     </div>
     <div class="swiper-slide" data-randomizable>
       <a href="http://cupcakeplantation.hivetimes.co.za/" target="_blank" rel="noopener">
-        <img src="images-slider/cupcake-plantation-long.jpg" alt="Cupcake Plantation">
+        <img src="images-slider/cupcake-plantation-long.jpg" alt="Cupcake Plantation" loading="lazy">
       </a>
     </div>
     <div class="swiper-slide" data-randomizable>
       <a href="https://hivetimes.co.za/Polaricecream.html" target="_blank" rel="noopener">
-        <img src="images-slider/polar-ice-cream-long.jpg" alt="Polar Ice Cream">
+        <img src="images-slider/polar-ice-cream-long.jpg" alt="Polar Ice Cream" loading="lazy">
       </a>
     </div>
      <div class="swiper-slide" data-randomizable>
       <a href="http://bakenco.hivetimes.co.za/" target="_blank" rel="noopener">
-        <img src="images-slider/bakenco.jpg" alt="Bake N Co.">
+        <img src="images-slider/bakenco.jpg" alt="Bake N Co." loading="lazy">
       </a>
     </div>
     <div class="swiper-slide" data-randomizable>
       <a href="https://hivetimes.co.za/broadway-page.html" target="_blank" rel="noopener">
-        <img src="images-slider/broadway-sweets-long.jpg" alt="Broadway Sweets">
+        <img src="images-slider/broadway-sweets-long.jpg" alt="Broadway Sweets" loading="lazy">
       </a>
     </div>
     <div class="swiper-slide" data-randomizable>
       <a href="butcher-shop.html" target="_blank" rel="noopener">
-        <img src="images-slider/butcherblock-long.jpg" alt="Butcher shop">
+        <img src="images-slider/butcherblock-long.jpg" alt="Butcher shop" loading="lazy">
       </a>
     </div>
     <div class="swiper-slide" data-randomizable>
       <a href="https://hivetimes.co.za/nothingfancy.html" target="_blank" rel="noopener">
-        <img src="images-slider/nothingfancy-long.jpg" alt="Nothing Fancy">
+        <img src="images-slider/nothingfancy-long.jpg" alt="Nothing Fancy" loading="lazy">
       </a>
     </div>
     <div class="swiper-slide" data-randomizable>
       <a href="http://shupz.hivetimes.co.za/" target="_blank" rel="noopener">
-        <img src="images-slider/shupz.jpg" alt="Shupz">
+        <img src="images-slider/shupz.jpg" alt="Shupz" loading="lazy">
       </a>
     </div>
     <div class="swiper-slide" data-randomizable>
       <a href="https://nuhashealthyliving.hivetimes.co.za/" target="_blank" rel="noopener">
-        <img src="images-slider/nuhashealthyliving.jpg" alt="Nuhas Healthy Living">
+        <img src="images-slider/nuhashealthyliving.jpg" alt="Nuhas Healthy Living" loading="lazy">
       </a>
     </div>
      <div class="swiper-slide" data-randomizable>
       <a href="https://sweetlane.hivetimes.co.za/" target="_blank" rel="noopener">
-        <img src="images-slider/sweetlane.jpg" alt="Sweetlane">
+        <img src="images-slider/sweetlane.jpg" alt="Sweetlane" loading="lazy">
       </a>
     </div>
   </div>
@@ -165,40 +189,30 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <script>
-  // Fisher-Yates shuffle algorithm for randomization
-  function shuffleArray(array) {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  }
-
-  // Randomize slides (keeping first 3 fixed)
   document.addEventListener('DOMContentLoaded', function() {
     const wrapper = document.getElementById('swiper-wrapper');
-    const fixedSlides = wrapper.querySelectorAll('.swiper-slide:not([data-randomizable])');
+    const fixedSlides = Array.from(wrapper.querySelectorAll('.swiper-slide:not([data-randomizable])'));
     const randomizableSlides = Array.from(wrapper.querySelectorAll('.swiper-slide[data-randomizable]'));
+    
+    // Fisher-Yates shuffle algorithm (in-place, no cloning needed)
+    for (let i = randomizableSlides.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [randomizableSlides[i], randomizableSlides[j]] = [randomizableSlides[j], randomizableSlides[i]];
+    }
     
     // Clear wrapper and re-append in order: fixed + shuffled
     wrapper.innerHTML = '';
-    
-    // Append fixed slides first
-    fixedSlides.forEach(slide => wrapper.appendChild(slide.cloneNode(true)));
-    
-    // Append randomized slides
-    const shuffled = shuffleArray(randomizableSlides);
-    shuffled.forEach(slide => wrapper.appendChild(slide.cloneNode(true)));
+    fixedSlides.forEach(slide => wrapper.appendChild(slide));
+    randomizableSlides.forEach(slide => wrapper.appendChild(slide));
     
     // Initialize Swiper AFTER DOM is updated
     const swiper = new Swiper('.mySwiper', {
       loop: true,
       grabCursor: true,
       effect: 'slide',
-      speed: 400,
+      speed: 600,
       autoplay: {
-        delay: 1500,
+        delay: 2500,
         disableOnInteraction: false,
         pauseOnMouseEnter: true,
       },
@@ -211,39 +225,19 @@
         nextEl: '.swiper-button-next',
         prevEl: '.swiper-button-prev',
       },
-      keyboard: {
-        enabled: true,
-        onlyInViewport: true,
-      },
-      // Enhanced touch/swipe settings
+      keyboard: { enabled: true, onlyInViewport: true },
       touchRatio: 1,
       touchAngle: 45,
       simulateTouch: true,
       shortSwipes: true,
       longSwipes: true,
-      longSwipesRatio: 0.5,
-      longSwipesMs: 300,
       followFinger: true,
       allowTouchMove: true,
       threshold: 5,
-      // Accessibility
       a11y: {
         enabled: true,
         prevSlideMessage: 'Previous slide',
         nextSlideMessage: 'Next slide',
-      },
-      // Optional: Add fade effect on slide change
-      on: {
-        slideChangeTransitionStart: function() {
-          document.querySelectorAll('.swiper-slide img').forEach(img => {
-            img.style.opacity = '0.85';
-          });
-        },
-        slideChangeTransitionEnd: function() {
-          document.querySelectorAll('.swiper-slide-active img').forEach(img => {
-            img.style.opacity = '1';
-          });
-        }
       }
     });
   });

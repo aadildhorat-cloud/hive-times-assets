@@ -1,4 +1,4 @@
-name: Sync slider + images
+name: Sync slider + images to all repos
 
 on:
   push:
@@ -9,37 +9,59 @@ on:
   workflow_dispatch:
 
 jobs:
-  sync-slider:
+  sync-to-all-repos:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
-      - name: Sync files to target repos
-        uses: kbrashears5/github-action-file-sync@v2.0.0
-        with:
-          REPOSITORIES: |
-            aadildhorat-cloud/Hive-Times@main
-            aadildhorat-cloud/polaricecream@main
-            aadildhorat-cloud/broadwaysweets@main
-            aadildhorat-cloud/sweetdepot@main
-            aadildhorat-cloud/sweetmart@main
-            aadildhorat-cloud/doughandco@main
-            aadildhorat-cloud/butcherblock@main
-            aadildhorat-cloud/nothingfancy@main
-            aadildhorat-cloud/cupcake-plantation@main
-            aadildhorat-cloud/delectable-dippers@main
-            aadildhorat-cloud/daintydelicacies@main
-            aadildhorat-cloud/shubz@main
-            aadildhorat-cloud/businesses@main
-            aadildhorat-cloud/services@main
-            aadildhorat-cloud/bakenco@main
-            aadildhorat-cloud/nuhashealthyliving@main
-            aadildhorat-cloud/sweetlane@main
-          FILES: |
-            slider.html=slider.html
-            images-slider/=images-slider/
-          TOKEN: ${{ secrets.ACTIONS }}
-          COMMIT_MESSAGE: "chore: sync slider + images from hive-times-assets"
+      - name: Sync files to all organization repositories
+        env:
+          GH_TOKEN: ${{ secrets.ACTIONS }}
+        run: |
+          # 1. Dynamically fetch all active (non-archived) repositories in the org
+          echo "🔍 Fetching all repositories for aadildhorat-cloud..."
+          REPOS=$(gh repo list aadildhorat-cloud --limit 200 --json nameWithOwner,isArchived -q '.[] | select(.isArchived == false) | .nameWithOwner')
+          
+          # 2. Prepare the files to be synced
+          mkdir -p sync_temp
+          cp slider.html sync_temp/
+          cp -r images-slider sync_temp/
+          
+          # 3. Loop through each repository and sync files
+          for REPO in $REPOS; do
+            echo "------------------------------------------------"
+            echo "🔄 Processing $REPO..."
+            
+            # Clone the target repo (shallow clone for speed)
+            gh repo clone "$REPO" target_repo -- --depth 1
+            
+            cd target_repo
+            
+            # Configure git identity for the commit
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            
+            # Copy the updated files into the cloned repo
+            cp ../sync_temp/slider.html .
+            cp -r ../sync_temp/images-slider .
+            
+            # Stage files and check for actual changes
+            git add slider.html images-slider/
+            
+            if ! git diff --staged --quiet; then
+              git commit -m "chore: sync slider + images from hive-times-assets"
+              git push origin main
+              echo "✅ Successfully synced to $REPO"
+            else
+              echo "⏩ No changes detected in $REPO, skipping commit."
+            fi
+            
+            # Clean up before next iteration to save runner space
+            cd ..
+            rm -rf target_repo
+          done
+          echo "------------------------------------------------"
+          echo "🎉 Sync process completed for all repositories!"

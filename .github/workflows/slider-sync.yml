@@ -20,35 +20,53 @@ jobs:
       - name: Sync files to all organization repositories
         env:
           GH_TOKEN: ${{ secrets.ACTIONS }}
+          SOURCE_REPO: "aadildhorat-cloud/hive-times-assets" # Change this if your source repo name is different
         run: |
-          # 1. Dynamically fetch all active (non-archived) repositories in the org
-          echo "🔍 Fetching all repositories for aadildhorat-cloud..."
-          REPOS=$(gh repo list aadildhorat-cloud --limit 200 --json nameWithOwner,isArchived -q '.[] | select(.isArchived == false) | .nameWithOwner')
+          set -e # Exit immediately if a critical command fails
+          
+          echo "🔍 Fetching all active repositories for aadildhorat-cloud..."
+          # Fetch repos, excluding the source repo itself and any archived repos
+          REPOS=$(gh repo list aadildhorat-cloud --limit 200 --json nameWithOwner,isArchived -q '.[] | select(.isArchived == false and .nameWithOwner != "'"$SOURCE_REPO"'") | .nameWithOwner')
+          
+          if [ -z "$REPOS" ]; then
+            echo "⚠️ No target repositories found to sync."
+            exit 0
+          fi
           
           # 2. Prepare the files to be synced
           mkdir -p sync_temp
-          cp slider.html sync_temp/
-          cp -r images-slider sync_temp/
+          
+          if [ -f "slider.html" ]; then
+            cp slider.html sync_temp/
+            echo "✅ Prepared slider.html for sync"
+          else
+            echo "❌ slider.html not found in source repository! Aborting."
+            exit 1
+          fi
+          
+          if [ -d "images-slider" ]; then
+            cp -r images-slider sync_temp/
+            echo "✅ Prepared images-slider/ for sync"
+          else
+            echo "ℹ️ images-slider/ directory not found, skipping image sync."
+          fi
           
           # 3. Loop through each repository and sync files
           for REPO in $REPOS; do
             echo "------------------------------------------------"
             echo "🔄 Processing $REPO..."
-             - name: Sync files to all organization repositories
-         env:
-           GH_TOKEN: ${{ secrets.ACTIONS }}
-         run: |
-           # Configure Git to use GH_TOKEN for authentication
-           git config --global credential.helper store
-           echo "https://x-access-token:${GH_TOKEN}@github.com" > ~/.git-credentials
-           
-           # 1. Dynamically fetch all active (non-archived) repositories in the org
-           echo "🔍 Fetching all repositories for aadildhorat-cloud..."
-           REPOS=$(gh repo list aadildhorat-cloud --limit 200 --json nameWithOwner,isArchived -q '.[] | select(.isArchived == false) | .nameWithOwner')
-            # Clone the target repo (shallow clone for speed)
-            gh repo clone "$REPO" target_repo -- --depth 1
             
-            cd target_repo
+            # Get the default branch of the target repo (main or master)
+            DEFAULT_BRANCH=$(gh repo view "$REPO" --json defaultBranchRef --jq '.defaultBranchRef.name')
+            echo "   🌿 Default branch: $DEFAULT_BRANCH"
+            
+            # Clone the target repo (shallow clone for speed)
+            if ! gh repo clone "$REPO" target_repo -- --depth 1 --branch "$DEFAULT_BRANCH" 2>/dev/null; then
+              echo "❌ Failed to clone $REPO. Skipping."
+              continue
+            fi
+            
+            cd target_repo || continue
             
             # Configure git identity for the commit
             git config user.name "github-actions[bot]"
@@ -56,15 +74,26 @@ jobs:
             
             # Copy the updated files into the cloned repo
             cp ../sync_temp/slider.html .
-            cp -r ../sync_temp/images-slider .
+            if [ -d "../sync_temp/images-slider" ]; then
+              cp -r ../sync_temp/images-slider .
+            fi
             
-            # Stage files and check for actual changes
-            git add slider.html images-slider/
+            # Stage files
+            git add slider.html
+            if [ -d "images-slider" ]; then
+              git add images-slider/
+            fi
             
+            # Check for actual changes
             if ! git diff --staged --quiet; then
+              echo "   📝 Changes detected. Committing and pushing..."
               git commit -m "chore: sync slider + images from hive-times-assets"
-              git push origin main
-              echo "✅ Successfully synced to $REPO"
+              
+              if git push origin "$DEFAULT_BRANCH" 2>/dev/null; then
+                echo "✅ Successfully synced to $REPO"
+              else
+                echo "❌ Failed to push to $REPO. Check branch protection rules or token permissions."
+              fi
             else
               echo "⏩ No changes detected in $REPO, skipping commit."
             fi
@@ -73,5 +102,6 @@ jobs:
             cd ..
             rm -rf target_repo
           done
+          
           echo "------------------------------------------------"
           echo "🎉 Sync process completed for all repositories!"

@@ -34,7 +34,17 @@ jobs:
           for REPO in $REPOS; do
             echo "------------------------------------------------"
             echo "🔄 Processing $REPO..."
-            
+             - name: Sync files to all organization repositories
+         env:
+           GH_TOKEN: ${{ secrets.ACTIONS }}
+         run: |
+           # Configure Git to use GH_TOKEN for authentication
+           git config --global credential.helper store
+           echo "https://x-access-token:${GH_TOKEN}@github.com" > ~/.git-credentials
+           
+           # 1. Dynamically fetch all active (non-archived) repositories in the org
+           echo "🔍 Fetching all repositories for aadildhorat-cloud..."
+           REPOS=$(gh repo list aadildhorat-cloud --limit 200 --json nameWithOwner,isArchived -q '.[] | select(.isArchived == false) | .nameWithOwner')
             # Clone the target repo (shallow clone for speed)
             gh repo clone "$REPO" target_repo -- --depth 1
             
